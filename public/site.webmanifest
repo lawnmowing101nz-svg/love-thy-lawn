@@ -1,0 +1,13 @@
+{
+  "name": "Love Thy Lawn",
+  "short_name": "Love Thy Lawn",
+  "description": "Battery-powered lawn mowing in Te Awamutu & Kihikihi",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1f7a3f",
+  "icons": [
+    { "src": "/favicon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/favicon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

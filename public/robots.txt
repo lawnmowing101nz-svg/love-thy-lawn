@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://love-thy-lawn.pages.dev/sitemap.xml
