@@ -105,3 +105,20 @@
     revealEls.forEach(function(el){ el.classList.add("in-view"); });
   }
 })();
+
+/* Live "X/300" counter — auto-attaches to every textarea[maxlength], so any
+   future form gets one just by adding the attribute. */
+(function(){
+  document.addEventListener("DOMContentLoaded", function(){
+    document.querySelectorAll("textarea[maxlength]").forEach(function(ta){
+      if (ta.nextElementSibling && ta.nextElementSibling.className === "char-count") return;
+      var max = ta.getAttribute("maxlength");
+      var counter = document.createElement("div");
+      counter.className = "char-count";
+      ta.parentNode.insertBefore(counter, ta.nextSibling);
+      function update(){ counter.textContent = ta.value.length + "/" + max; }
+      ta.addEventListener("input", update);
+      update();
+    });
+  });
+})();

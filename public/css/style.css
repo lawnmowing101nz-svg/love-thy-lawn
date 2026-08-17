@@ -401,3 +401,6 @@ section{padding:72px 0;}
 
 .skip-link{position:absolute;left:-999px;top:0;background:#fff;padding:10px;z-index:999;}
 .skip-link:focus{left:10px;}
+
+/* Message length counter (300 character rule) */
+.char-count{font-size:12px;color:var(--text-light);text-align:right;margin-top:4px;}
