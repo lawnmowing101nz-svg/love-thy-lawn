@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Update to the custom domain if/when one is connected in Cloudflare Pages -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://love-thy-lawn.pages.dev/</loc></url>
-  <url><loc>https://love-thy-lawn.pages.dev/about</loc></url>
-  <url><loc>https://love-thy-lawn.pages.dev/services</loc></url>
-  <url><loc>https://love-thy-lawn.pages.dev/gallery</loc></url>
-  <url><loc>https://love-thy-lawn.pages.dev/contact</loc></url>
+  <url><loc>https://lovethylawn.co.nz/</loc></url>
+  <url><loc>https://lovethylawn.co.nz/about</loc></url>
+  <url><loc>https://lovethylawn.co.nz/services</loc></url>
+  <url><loc>https://lovethylawn.co.nz/gallery</loc></url>
+  <url><loc>https://lovethylawn.co.nz/contact</loc></url>
 </urlset>

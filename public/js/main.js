@@ -1,6 +1,197 @@
 (function(){
   var FORMSPARK_URL = "https://submit-form.com/bDrIRB60c";
 
+  // Cold-pitch spam blocklist. The live list is shared across every site and
+  // loaded by the script tag in the HTML; this copy is the fallback for when
+  // that request fails, so the form is never left unprotected.
+  var SPAM_KEYWORDS_FALLBACK = [
+      "b2b",
+      "seo",
+      "backlink",
+      "link building",
+      "domain authority",
+      "organic traffic",
+      "keyword ranking",
+      "serp",
+      "guest post",
+      "ahrefs",
+      "semrush",
+      "moz",
+      "web design",
+      "website redesign",
+      "web development",
+      "app development",
+      "wordpress",
+      "shopify",
+      "full-stack",
+      "devops",
+      "mvp",
+      "hire developers",
+      "staff augmentation",
+      "offshore",
+      "virtual assistant",
+      "ai automation",
+      "ai agent",
+      "ai assistant",
+      "ai-powered",
+      "ai-native",
+      "ai video",
+      "artificial intelligence",
+      "generative",
+      "chatgpt",
+      "chatbot",
+      "automate your",
+      "automation",
+      "crm",
+      "saas",
+      "lead generation",
+      "qualified leads",
+      "cold email",
+      "mass email",
+      "bulk email",
+      "email campaign",
+      "google my business",
+      "gmb",
+      "local seo",
+      "google maps ranking",
+      "online presence",
+      "reputation management",
+      "social media management",
+      "facebook ads",
+      "google ads",
+      "meta ads",
+      "ppc",
+      "retargeting",
+      "digital marketing",
+      "marketing agency",
+      "content marketing",
+      "press release",
+      "brand awareness",
+      "branding package",
+      "logo design",
+      "video production",
+      "explainer video",
+      "voiceover",
+      "influencer",
+      "free audit",
+      "seo audit",
+      "conversion rate",
+      "sales funnel",
+      "monetize",
+      "monetise",
+      "your roi",
+      "scale your business",
+      "grow your business",
+      "business loan",
+      "merchant cash",
+      "invoice factoring",
+      "crypto",
+      "bitcoin",
+      "forex",
+      "investment opportunity",
+      "passive income",
+      "make money online",
+      "affiliate",
+      "you've been selected",
+      "congratulations you",
+      "click here",
+      "risk-free",
+      "free trial",
+      "limited time offer",
+      "act now",
+      "unsubscribe",
+      "gift card",
+      "wire transfer",
+      "linkedin",
+      "calendly",
+      "calendar.app",
+      "tidycal",
+      "savvycal",
+      "hubspot",
+      "telegram",
+      "book a call",
+      "brief call",
+      "hop on a call",
+      "jump on a call",
+      "discovery call",
+      "book a demo",
+      "15 minutes of your",
+      "30 minutes of your",
+      "worth a chat",
+      "worth a conversation",
+      "sounds relevant",
+      "let's connect",
+      "circling back",
+      "touching base",
+      "who handles your",
+      "are you the right person",
+      "we specialize",
+      "we specialise",
+      "our team handles",
+      "we work with agencies",
+      "full production",
+      "end-to-end",
+      "turnkey",
+      "white label",
+      "white-label",
+      "proof of concept",
+      "proof-of-concept",
+      "case study",
+      "case studies",
+      "our recent work",
+      "our latest work",
+      "cofounder",
+      "co-founder",
+      "business development manager",
+      "sales representative",
+      "partnership",
+      "collaboration",
+      "synergy",
+      "win-win",
+      "mutual benefit",
+      "dear sir",
+      "dear madam"
+    ];
+
+  // Read at submit time, not at load, so it does not matter whether the
+  // shared list has arrived yet when this file runs.
+  function spamKeywords() {
+    return (window.SPAM_KEYWORDS && window.SPAM_KEYWORDS.length)
+      ? window.SPAM_KEYWORDS
+      : SPAM_KEYWORDS_FALLBACK;
+  }
+
+  function isSpamMessage(text) {
+    var lower = (text || "").toLowerCase();
+    return spamKeywords().some(function (kw) { return lower.indexOf(kw) !== -1; });
+  }
+
+  // Drop-in for fetch() on the Formspark call. A spam message is never sent,
+  // but resolves exactly as a success would, so the sender cannot tell they
+  // were filtered and reword it.
+  function spamGuardedFetch(url, opts) {
+    var text = "";
+    try {
+      var b = opts && opts.body;
+      if (b && typeof b.get === "function") {
+        var keys = ["Message", "message", "Comments", "comments", "Enquiry", "enquiry", "Details", "details", "Notes", "notes"];
+        for (var i = 0; i < keys.length && !text; i++) text = b.get(keys[i]) || "";
+        // Unrecognised field name: fall back to the longest value, which on a
+        // contact form is the free-text message, never the name or phone.
+        if (!text && typeof b.forEach === "function") {
+          b.forEach(function (v) { v = String(v || ""); if (v.length > text.length) text = v; });
+        }
+      } else if (typeof b === "string") {
+        text = decodeURIComponent(b.replace(/\+/g, " "));
+      }
+    } catch (e) {}
+    if (isSpamMessage(text)) {
+      return Promise.resolve({ ok: true, status: 200, json: function () { return Promise.resolve({}); } });
+    }
+    return fetch(url, opts);
+  }
+
+
   // Mobile nav toggle
   var navToggle = document.querySelector(".nav-toggle");
   var mainNav = document.querySelector(".main-nav");
@@ -55,7 +246,7 @@
 
       if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Sending..."; }
 
-      fetch(FORMSPARK_URL, {
+      spamGuardedFetch(FORMSPARK_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
